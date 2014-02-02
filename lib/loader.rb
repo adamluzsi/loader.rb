@@ -1,0 +1,10 @@
+#encoding: UTF-8
+module Loader
+
+  require "yaml"
+
+  require File.join(File.dirname(__FILE__),"loader","require")
+  require File.join(File.dirname(__FILE__),"loader","meta")
+  require File.join(File.dirname(__FILE__),"loader","hash")
+
+end
