@@ -20,65 +20,30 @@ module Loader
       # defaults
       begin
 
-        root_folder        = opts[:root]
-        override           = opts[:override]
-        target_config_hash = opts[:config]
-        lib_folder         = opts[:lib_folder]
-        config_folder      = opts[:config_folder]
+        root_folder         =  opts[:root]
+        root_folder        ||= caller_root_folder
 
+        target_config_hash  =  opts[:config_obj]
+        target_config_hash ||= Hash.new
 
-        override           ||= true
-        root_folder        ||= Dir.pwd
-        target_config_hash ||= Application.config
-
+        lib_folder          =  opts[:lib_folder]
         lib_folder         ||= File.join(root_folder,"{lib,libs}","**","meta")
+
+        config_folder       =  opts[:config_folder]
         config_folder      ||= File.join(root_folder,"{config,conf}","**")
 
-        require "yaml"
-        if target_config_hash.class != Hash
-          target_config_hash= Hash.new()
-        end
+        input_config_file   =  opts[:config_file]
+        environment         =  opts[:environment]
 
       end
 
-      # find elements
-      begin
-
-        #TODO meta DRY here!
-        Dir.glob(File.join(lib_folder,"*.{yaml,yml}")).each do |config_object|
-
-          # defaults
-          begin
-            config_name_elements= config_object.split(File::SEPARATOR)
-            type=                 config_name_elements.pop.split('.')[0]
-            config_name_elements.pop
-
-            category  = config_name_elements.pop
-            tmp_hash  = Hash.new()
-            yaml_data = YAML.load(File.open(config_object))
-          end
-
-          # processing
-          begin
-            if target_config_hash[category].nil?
-              target_config_hash[category]= { type => yaml_data }
-            else
-              unless override == false
-                target_config_hash[category][type]= yaml_data
-              end
-            end
-          end
-
-        end
-
-      end
+      target_config_hash.deep_merge! Loader.meta( absolute: lib_folder )
 
       # update by config
       begin
 
         # get config files
         begin
-
           config_yaml_paths= Array.new()
           Dir.glob(File.join(config_folder,"*.{yaml,yml}")).uniq.each do |one_path|
 
@@ -106,13 +71,13 @@ module Loader
         end
 
         # params config load
-        unless Application.config_file.nil?
+        unless input_config_file.nil?
           begin
-            path= File.expand_path(Application.config_file,"r")
+            path= File.expand_path(input_config_file,"r")
             File.open(path)
             config_yaml_paths.push(path)
           rescue Exception
-            config_yaml_paths.push(Application.config_file)
+            config_yaml_paths.push(input_config_file)
           end
         end
 
@@ -123,8 +88,8 @@ module Loader
               yaml_data= YAML.load(File.open(one_yaml_file_path))
               target_config_hash.deep_merge!(yaml_data)
 
-              unless Application.environment.nil?
-                if one_yaml_file_path.include?(Application.environment.to_s)
+              unless environment.nil?
+                if one_yaml_file_path.include?(environment.to_s)
                   break
                 end
               end
@@ -164,68 +129,121 @@ module Loader
 
     end
 
-    def caller_root
+    # you can give optional file names that will be searched for
+    def caller_root(*args)
 
-      sender_folder_path= caller_folder(2).split(File::Separator)
-      Dir.glob(sender_folder_path.join(File::Separator)).each do |e|
-        puts e
+      what_can_be_in_the_root= %w[
+              gemfile Gemfile GemFile
+              rakefile Rakefile RakeFile
+              config.ru README.md ] + args.map{|e|e.to_s}
+
+      folder_path= caller_folder(2).split(File::Separator)
+
+      loop do
+
+        Dir.glob(File.join(folder_path.join(File::Separator),"*")).map do |element|
+          if !File.directory?(element)
+            if what_can_be_in_the_root.include? element.split(File::Separator).last
+              return folder_path.join(File::Separator)
+            end
+          end
+        end
+
+        if folder_path.count != 0
+          folder_path.pop
+        else
+          return nil
+        end
+
       end
-
-
 
     end
 
+    alias :caller_root_folder :caller_root
+
     # load meta folders rb files
-    def meta( target_folder = nil )
+    # by default it will be the caller objects root folder (app root)
+    # else you must set with hand the path  from your app root
+    # example:
+    #
+    #  Loader.meta
+    #
+    #  Loader.meta 'lib','**','config_files'
+    #
+    #  Loader.meta root: "/home/...../my_app",'lib','**','meta'
+    #
+    #  Loader.meta 'lib','**','meta',
+    #              root: "/home/...../my_app"
+    #
+    # You can use the "absolute: string_path" option just alike so it wont try find your
+    # app root folder
+    #
+    # All will return a Hash obj with the loaded meta configs based on the
+    # yaml file name as key and the folder as the category
+    def meta( *args )
 
-      caller_root
+      options= args.extract_class!(Hash)[0]
+      options ||= {}
 
-      #target_folder ||= caller_folder
-      #
-      ## find elements
-      #begin
-      #  Dir.glob( File.join(target_folder,"*.{rb,ru}") ).each do |one_rb_file|
-      #    require one_rb_file
-      #  end
-      #end
-      #
-      ## defaults
-      #begin
-      #  target_config_hash= Hash.new()
-      #end
-      #
-      ## find elements
-      #begin
-      #
-      #  Dir.glob(File.join(target_folder,"*.{yaml,yml}")).each do |config_object|
-      #
-      #    # defaults
-      #    begin
-      #      config_name_elements= config_object.split(File::SEPARATOR)
-      #      type=     config_name_elements.pop.split('.')[0]
-      #      config_name_elements.pop
-      #      category= config_name_elements.pop
-      #      tmp_hash= Hash.new()
-      #      yaml_data= YAML.load(File.open(config_object))
-      #    end
-      #
-      #    # processing
-      #    begin
-      #      if target_config_hash[category].nil?
-      #        target_config_hash[category]= { type => yaml_data }
-      #      else
-      #        target_config_hash[category][type]= yaml_data
-      #      end
-      #    end
-      #
-      #  end
-      #
-      #end
-      #
-      ## return data
-      #begin
-      #  return target_config_hash
-      #end
+      if options[:absolute].nil?
+
+        if args.empty?
+          args= ["lib","**","meta"]
+        end
+
+        if !options[:root].nil?
+          root_folder_path= options[:root]
+        else
+          root_folder_path= caller_root_folder
+        end
+
+        args.unshift(root_folder_path)
+
+      else
+        args= [options[:absolute]]
+      end
+
+      target_folder= File.join(*args)
+
+      # load ruby files from meta
+      begin
+        Dir.glob( File.join(target_folder,"*.{rb,ru}") ).each do |one_rb_file|
+          require one_rb_file
+        end
+      end
+
+      # load yaml files elements
+      begin
+
+        target_config_hash= Hash.new
+        Dir.glob(File.join(target_folder,"*.{yaml,yml}")).each do |config_object|
+
+          # defaults
+          begin
+            config_name_elements= config_object.split(File::SEPARATOR)
+
+            type=     config_name_elements.pop.split('.')[0]
+            config_name_elements.pop
+
+            category= config_name_elements.pop
+            yaml_data= YAML.load(File.open(config_object))
+          end
+
+          # processing
+          begin
+            target_config_hash[category]       ||= {}
+            target_config_hash[category][type] ||= {}
+            target_config_hash[category][type]  =  yaml_data
+          end
+
+        end
+
+      end
+
+      # return data
+      begin
+        return target_config_hash
+      end
 
     end
 

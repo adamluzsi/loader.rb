@@ -6,5 +6,6 @@ module Loader
   require File.join(File.dirname(__FILE__),"loader","require")
   require File.join(File.dirname(__FILE__),"loader","meta")
   require File.join(File.dirname(__FILE__),"loader","hash")
+  require File.join(File.dirname(__FILE__),"loader","array")
 
 end

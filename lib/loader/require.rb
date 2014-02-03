@@ -18,36 +18,11 @@ module Kernel
   # return the directory and the sub directories file names (rb/ru)
   def require_relative_directory(folder)
 
-    # pre format
-    begin
-
-      # path create from caller
-      begin
-        path= caller[0].split(".{rb,ru}:").first.split(File::SEPARATOR)
-        path= path[0..(path.count-2)]
-      end
-
-      # after formatting
-      begin
-
-        if !File.directory?(path.join(File::SEPARATOR))
-          path.pop
-        end
-        path= File.join(path.join(File::SEPARATOR))
-        if path != File.expand_path(path)
-          path= File.expand_path(path)
-        end
-
-      end
-
+    Dir.glob(File.join(Loader.caller_folder,folder,"**","*.{rb,ru}")).each do |one_path|
+      require one_path
     end
 
-    # find elements
-    begin
-      return Dir.glob(File.join(path,folder,"**","*.{rb,ru}")).each do |one_path|
-        require one_path
-      end
-    end
+    return nil
 
   end
 
