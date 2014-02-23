@@ -1,7 +1,11 @@
 module Loader
   class << self
 
+    def directory_path
+      self.caller_folder
+    end
 
+    alias :directory :directory_path
 
     # gives you a basic meta load framework for easy config use (yaml)
     # basic system is
