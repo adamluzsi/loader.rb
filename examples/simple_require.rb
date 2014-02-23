@@ -1,6 +1,6 @@
 require_relative "../lib/loader"
 
-require_relative_directory "/home/reaper/workspace/GEMS/loader/examples/lib"
+require_directory "lib"
 # one of the file has a "puts \"hello world!\"" that will run on load
 #> hello world!
 

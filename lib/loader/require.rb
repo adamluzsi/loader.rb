@@ -7,13 +7,6 @@ module Kernel
   #  end
   #end
 
-  # require by absolute path directory's files
-  def require_directory(folder)
-    Dir.glob(File.join(folder,"**","*.{rb,ru}")).each do |file_path|
-      require file_path
-    end
-  end
-
   # require sender relative directory's files
   # return the directory and the sub directories file names (rb/ru)
   def require_relative_directory(folder)
@@ -29,5 +22,7 @@ module Kernel
     return nil
 
   end
+
+  alias :require_directory :require_relative_directory
 
 end
