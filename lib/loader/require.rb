@@ -18,7 +18,11 @@ module Kernel
   # return the directory and the sub directories file names (rb/ru)
   def require_relative_directory(folder)
 
-    Dir.glob(File.join(Loader.caller_folder,folder,"**","*.{rb,ru}")).each do |one_path|
+    unless folder.to_s[0] == File::Separator
+      folder= Loader.caller_folder,folder
+    end
+
+    Dir.glob(File.join(folder,"**","*.{rb,ru}")).each do |one_path|
       require one_path
     end
 
