@@ -192,7 +192,7 @@ module Loader
       if options[:absolute].nil?
 
         if args.empty?
-          args= ["lib","**","meta"]
+          args= ["{lib,libs,library,libraries}","**","meta"]
         end
 
         if !options[:root].nil?

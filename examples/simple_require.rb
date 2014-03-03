@@ -1,6 +1,5 @@
 require_relative "../lib/loader"
 
-puts Loader.directory_path
 require_directory "lib"
 # one of the file has a "puts \"hello world!\"" that will run on load
 #> hello world!
