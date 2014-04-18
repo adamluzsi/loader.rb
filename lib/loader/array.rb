@@ -1,4 +1,5 @@
-class Array
+module Loader
+  module  ArrayEXT
 
   # generate params structure from array
   # return_array
@@ -19,4 +20,7 @@ class Array
 
   end unless method_defined? :extract_class!
 
+  end
 end
+
+Array.__send__ :include, Loader::ArrayEXT

@@ -19,3 +19,6 @@ puts Loader.meta absolute: File.expand_path(File.join(File.dirname(__FILE__),"li
 
 puts Loader.metaloader_framework root: File.expand_path(File.dirname(__FILE__))
 #> {"asdf"=>{"else"=>{"world"=>"hello"}, "stuff"=>{"hello"=>"world"}}}
+
+require_directory "lib", :r #> recursive
+#> hello world! from stuff.rb

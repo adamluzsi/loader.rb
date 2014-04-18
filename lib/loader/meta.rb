@@ -139,7 +139,7 @@ module Loader
       what_can_be_in_the_root= %w[
               gemfile Gemfile GemFile
               rakefile Rakefile RakeFile
-              config.ru README.md ] + args.map{|e|e.to_s}
+              config.ru README.md LICENSE LICENSE.txt .gitignore ] + args.map{|e|e.to_s}
 
       folder_path= caller_folder(2).split(File::Separator)
 
@@ -150,13 +150,17 @@ module Loader
             if what_can_be_in_the_root.include? element.split(File::Separator).last
               return folder_path.join(File::Separator)
             end
+          else
+            if %W[ .git .bundler ].include? element.split(File::Separator).last
+              return folder_path.join(File::Separator)
+            end
           end
         end
 
-        if folder_path.count != 0
-          folder_path.pop
+        if folder_path.count == 0
+          return Dir.pwd
         else
-          return nil
+          folder_path.pop
         end
 
       end
