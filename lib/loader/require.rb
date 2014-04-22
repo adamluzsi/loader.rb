@@ -40,6 +40,11 @@ module Loader
 
     alias :require_directory :require_relative_directory
 
+    def require_relative_directory_r folder
+      require_relative_directory folder,:r
+    end
+    alias :require_directory_r :require_relative_directory_r
+
   end
 
 end
