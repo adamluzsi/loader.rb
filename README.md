@@ -34,4 +34,7 @@ the use cases are hell simple , like:
     require_directory "lib", :r
     #> require_directory is an alias for require_relative_directory
 
+    # you can use recursive by default call too
+    require_directory_r "lib" #> || require_relative_directory_r
+
 ```
