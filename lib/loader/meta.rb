@@ -98,20 +98,13 @@ module Loader
       # defaults
       begin
 
-        root_folder         =  opts[:root]
-        root_folder        ||= caller_root_folder
-
-        target_config_hash  =  opts[:config_obj]
-        target_config_hash ||= Hash.new
-
-        lib_folder          =  opts[:lib_folder]
-        lib_folder         ||= File.join(root_folder,"{lib,libs}","**","meta")
-
-        config_folder       =  opts[:config_folder]
-        config_folder      ||= File.join(root_folder,"{config,conf}","**")
-
-        input_config_file   =  opts[:config_file]
-        environment         =  opts[:environment]
+        input_config_file   = opts[:f]  || opts[:config_file]
+        target_config_hash  = opts[:o]  || opts[:config_obj]    || Hash.new
+        config_folder       = opts[:d]  || opts[:config_folder] || File.join(root_folder,"{config,conf}","**")
+        root_folder         = opts[:r]  || opts[:root]          || caller_root_folder
+        lib_folder          = opts[:l]  || opts[:lib_folder]    || File.join(root_folder,"{lib,libs}","**","meta")
+        environment         = opts[:e]  || opts[:env]           || opts[:environment]
+        raise unless target_config_hash.class <= Hash
 
       end
 
