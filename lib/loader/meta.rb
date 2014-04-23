@@ -1,11 +1,85 @@
 module Loader
-  class << self
 
-    def directory_path
-      self.caller_folder
+  module ObjectCallerEXT
+
+    def __directory__
+      caller_folder(-1)
     end
 
-    alias :directory :directory_path
+    alias :__DIR__ :__directory__
+
+    def caller_file skip= 0
+
+      raise unless skip.class <= Integer
+      skip += 1
+
+      return nil if caller[skip].nil?
+      caller_file = caller[skip].scan(/^(.*)(:\d+:\w+)/)[0][0]
+
+      if caller_file[0] != File::Separator
+        caller_file= File.expand_path caller_file
+      end
+
+      return caller_file
+
+    end
+
+    def caller_folder skip= 0
+
+      raise unless skip.class <= Integer
+      caller_file_path= caller_file(skip+1)
+      return nil if caller_file_path.nil?
+
+      if !File.directory?(caller_file_path)
+        caller_file_path= caller_file_path.split(File::Separator)
+        caller_file_path.pop
+        caller_file_path= caller_file_path.join(File::Separator)
+      end
+
+      return caller_file_path
+
+    end
+
+  end
+  extend ObjectCallerEXT
+
+  class << self
+
+    # you can give optional file names that will be searched for
+    def caller_root(*args)
+
+      what_can_be_in_the_root= %w[
+              gemfile Gemfile GemFile
+              rakefile Rakefile RakeFile
+              config.ru README.md LICENSE LICENSE.txt .gitignore ] + args.map{|e|e.to_s}
+
+      folder_path= caller_folder(1).split(File::Separator)
+
+      loop do
+
+        Dir.glob(File.join(folder_path.join(File::Separator),"*")).map do |element|
+          if !File.directory?(element)
+            if what_can_be_in_the_root.include? element.split(File::Separator).last
+              return folder_path.join(File::Separator)
+            end
+          else
+            if %W[ .git .bundler ].include? element.split(File::Separator).last
+              return folder_path.join(File::Separator)
+            end
+          end
+        end
+
+        if folder_path.count == 0
+          return nil
+        else
+          folder_path.pop
+        end
+
+      end
+
+    end
+
+    alias :caller_root_folder :caller_root
 
     # gives you a basic meta load framework for easy config use (yaml)
     # basic system is
@@ -108,67 +182,6 @@ module Loader
 
     end
 
-    def caller_folder integer_num= 1
-
-      # path create from caller
-      begin
-        path= caller[integer_num].split(".{rb,ru}:").first.split(File::Separator)
-        path= path[0..(path.count-2)]
-      end
-
-      # after formatting
-      begin
-
-        if !File.directory?(path.join(File::SEPARATOR))
-          path.pop
-        end
-        path= File.join(path.join(File::SEPARATOR))
-        if path != File.expand_path(path)
-          path= File.expand_path(path)
-        end
-
-      end
-
-      return path
-
-    end
-
-    # you can give optional file names that will be searched for
-    def caller_root(*args)
-
-      what_can_be_in_the_root= %w[
-              gemfile Gemfile GemFile
-              rakefile Rakefile RakeFile
-              config.ru README.md LICENSE LICENSE.txt .gitignore ] + args.map{|e|e.to_s}
-
-      folder_path= caller_folder(2).split(File::Separator)
-
-      loop do
-
-        Dir.glob(File.join(folder_path.join(File::Separator),"*")).map do |element|
-          if !File.directory?(element)
-            if what_can_be_in_the_root.include? element.split(File::Separator).last
-              return folder_path.join(File::Separator)
-            end
-          else
-            if %W[ .git .bundler ].include? element.split(File::Separator).last
-              return folder_path.join(File::Separator)
-            end
-          end
-        end
-
-        if folder_path.count == 0
-          return Dir.pwd
-        else
-          folder_path.pop
-        end
-
-      end
-
-    end
-
-    alias :caller_root_folder :caller_root
-
     # load meta folders rb files
     # by default it will be the caller objects root folder (app root)
     # else you must set with hand the path  from your app root
@@ -257,4 +270,7 @@ module Loader
 
 
   end
+
 end
+
+Object.__send__ :include, Loader::ObjectCallerEXT

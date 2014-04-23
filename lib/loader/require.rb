@@ -1,6 +1,6 @@
 module Loader
 
-  module ObjectEXT
+  module ObjectRequireEXT
 
     # Offline repo activate
     #def mount_modules(target_folder= File.join(Dir.pwd,"{module,modules}","{gem,gems}") )
@@ -49,4 +49,4 @@ module Loader
 
 end
 
-Object.__send__ :include, Loader::ObjectEXT
+Object.__send__ :include, Loader::ObjectRequireEXT

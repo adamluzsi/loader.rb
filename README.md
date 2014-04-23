@@ -18,9 +18,13 @@ the File Expand tricks
 
 The end goal is to make an easy ruby file loader for gems. So Dir.pwd do not affect
 
-the use cases are hell simple , like:
+### Examples
+
+load relative directory (not based on Dir.pwd)
 
 ```ruby
+
+    require 'loader'
 
     # return and load the meta files from
     # the lib/**/meta and return the hash obj build from the yamls
@@ -36,5 +40,22 @@ the use cases are hell simple , like:
 
     # you can use recursive by default call too
     require_directory_r "lib" #> || require_relative_directory_r
+
+```
+
+Additional Syntax for caller magic
+
+```ruby
+
+    require 'loader'
+
+    __directory__  #> || __DIR__
+    #> return the current folder where the file is
+
+    caller_folder
+    #> return the folder what called the current file/method/object
+
+    caller_file
+    #> return the file what called the current file/method/object
 
 ```
