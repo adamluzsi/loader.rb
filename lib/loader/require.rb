@@ -20,15 +20,16 @@ module Loader
       # raise(ArgumentError,"invalid extension object, must be array like") unless opts[:extension].class <= Array
 
       unless folder.to_s[0] == File::Separator
-        folder= Loader.caller_folder,folder
+        folder= [Loader.caller_folder,folder]
       end
 
-      path_parts= [folder]
+      path_parts= [*folder]
       if recursive
         path_parts.push("**")
       end
       path_parts.push("*.{rb,ru}")
 
+      puts path_parts.inspect
 
       return_value= false
       Dir.glob(File.join(*path_parts)).each do |one_path|
@@ -41,7 +42,13 @@ module Loader
     alias :require_directory :require_relative_directory
 
     def require_relative_directory_r folder
+
+      unless folder.to_s[0] == File::Separator
+        folder= File.join(Loader.caller_folder,folder)
+      end
+
       require_relative_directory folder,:r
+
     end
     alias :require_directory_r :require_relative_directory_r
 
