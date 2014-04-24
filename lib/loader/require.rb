@@ -29,8 +29,6 @@ module Loader
       end
       path_parts.push("*.{rb,ru}")
 
-      puts path_parts.inspect
-
       return_value= false
       Dir.glob(File.join(*path_parts)).each do |one_path|
         require(one_path) ? return_value=( true ) : nil
