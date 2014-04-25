@@ -26,10 +26,6 @@ load relative directory (not based on Dir.pwd)
 
     require 'loader'
 
-    # return and load the meta files from
-    # the lib/**/meta and return the hash obj build from the yamls
-    Loader.meta
-
     # load all ruby file that was not loaded already
     # from that relative folder
     require_relative_directory "folder_name"
