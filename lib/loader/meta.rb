@@ -99,10 +99,10 @@ module Loader
       begin
 
         input_config_file   = opts[:f]  || opts[:config_file]
-        target_config_hash  = opts[:o]  || opts[:config_obj]    || opts[:out] || Hash.new
+        target_config_hash  = opts[:o]  || opts[:out]           || opts[:config_obj]    || {}
         root_folder         = opts[:r]  || opts[:root]          || caller_root_folder
         config_folder       = opts[:d]  || opts[:config_folder] || File.join(root_folder,"{config,conf}","**")
-        lib_folder          = opts[:l]  || opts[:lib_folder]    || File.join(root_folder,"{lib,libs}","**","meta")
+        lib_folder          = opts[:l]  || opts[:lib]           || opts[:lib_folder]    || File.join(root_folder,"{lib,libs}","**","meta")
         environment         = opts[:e]  || opts[:env]           || opts[:environment]
         raise unless target_config_hash.class <= Hash
 
