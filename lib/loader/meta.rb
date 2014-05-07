@@ -174,6 +174,7 @@ module Loader
       return target_config_hash
 
     end
+    alias :metaframework :metaloader_framework
 
     # load meta folders rb files
     # by default it will be the caller objects root folder (app root)
