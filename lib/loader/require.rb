@@ -2,51 +2,42 @@ module Loader
 
   module ObjectRequireEXT
 
-    # Offline repo activate
-    #def mount_modules(target_folder= File.join(Dir.pwd,"{module,modules}","{gem,gems}") )
-    #  Dir.glob(File.join(target_folder,"**","lib")).select{|f| File.directory?(f)}.each do |one_path|
-    #    $LOAD_PATH.unshift one_path
-    #  end
-    #end
-
     # require sender relative directory's files
     # return the directory and the sub directories file names (rb/ru)
-    def require_relative_directory( folder, *args )
+    def require_relative_directory *args
 
-      recursive= nil
-      [:recursive,:r, :R, 'r', 'R', '-r', '-R'].each{|e| args.include?(e) ? recursive ||= true : nil }
+      folder= args.select{|e|(e.class <= ::String)}.join(File::Separator)
+      opts=   Hash[*args.select{|e|(e.class <= ::Hash)}]
+      args=   args.select{|e|(e.class <= ::Symbol)}
 
-      # opts[:extension] ||= opts[:extensions] || opts[:ex] || opts[:e] || []
-      # raise(ArgumentError,"invalid extension object, must be array like") unless opts[:extension].class <= Array
+      opts[:recursive]      ||= opts.delete(:r) || opts.delete(:R) || !([:recursive,:r, :R,].select{|e| args.include?(e)}.empty?)
+      opts[:recursive]        = !!opts[:recursive]
+
+      opts[:caller_folder]  ||= opts.delete(:f) || opts.delete(:folder) || Loader.caller_folder
 
       unless folder.to_s[0] == File::Separator
-        folder= [Loader.caller_folder,folder]
+        folder= [opts[:caller_folder],folder]
       end
 
-      path_parts= [*folder]
-      if recursive
-        path_parts.push("**")
-      end
-      path_parts.push("*.{rb,ru}")
-
-      return_value= false
-      Dir.glob(File.join(*path_parts)).each do |one_path|
-        require(one_path) ? return_value=( true ) : nil
+      #> recursive option
+      begin
+        path_parts= [*folder]
+        if opts[:recursive]
+          path_parts.push("**")
+        end
+        path_parts.push("*.{rb,ru}")
       end
 
-      return return_value
+      return Dir.glob(File.join(*path_parts)).sort_by{|e| e.split(File::Separator).size }.map { |one_path|
+        require(one_path)
+      }.include?(true)
+
     end
 
     alias :require_directory :require_relative_directory
 
-    def require_relative_directory_r folder
-
-      unless folder.to_s[0] == File::Separator
-        folder= File.join(Loader.caller_folder,folder)
-      end
-
-      require_relative_directory folder,:r
-
+    def require_relative_directory_r *args
+      require_relative_directory *args, r: true, f: Loader.caller_folder
     end
     alias :require_directory_r :require_relative_directory_r
 
