@@ -12,7 +12,6 @@ Gem::Specification.new do |spec|
   spec.description   = %q{ dsl for gem helper calls such like relative folder calls that independ on the Dir.pwd or File.expand tricks and config loader stuffs, Check out the GIT! }
   spec.summary       = %q{DSL for helping make file require easy just like build configuration objects }
   spec.homepage      = "https://github.com/adamluzsi/loader"
-  spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
