@@ -108,7 +108,7 @@ module Loader
 
       end
 
-      deep_merge! target_config_hash, Loader.meta( absolute: lib_folder )
+      HashEXT.deep_merge! target_config_hash, Loader.meta( absolute: lib_folder )
 
       # update by config
       begin
@@ -157,7 +157,7 @@ module Loader
           config_yaml_paths.each do |one_yaml_file_path|
             begin
               yaml_data= YAML.load(File.open(one_yaml_file_path))
-              deep_merge!(target_config_hash,yaml_data)
+              HashEXT.deep_merge!(target_config_hash,yaml_data)
 
               unless environment.nil?
                 if one_yaml_file_path.include?(environment.to_s)

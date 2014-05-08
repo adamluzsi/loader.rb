@@ -17,5 +17,3 @@ module Loader
     end
   end
 end
-
-Hash.__send__ :include, Loader::HashEXT
