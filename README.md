@@ -20,7 +20,8 @@ The end goal is to make an easy ruby file loader for gems. So Dir.pwd do not aff
 
 ### Examples
 
-load relative directory (not based on Dir.pwd)
+load relative directory (not based on Dir.pwd but the caller files position)
+if you pass multiple string as argument it will be joined by file separator that the OS use
 
 ```ruby
 
@@ -32,12 +33,16 @@ load relative directory (not based on Dir.pwd)
 
     # for recursive use try the following
     require_relative_directory "lib", :r
-    ## or
+
+    # or
     require_relative_directory_r "lib"
+
+    # or
+    require_relative_directory "lib",r: true
 
 ```
 
-Additional Syntax for caller magic
+Additional Syntax for caller magics
 
 ```ruby
 
