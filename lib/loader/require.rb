@@ -57,7 +57,7 @@ module Loader
           end
         end
 
-      }.compact#.include?(true)
+      }.compact
 
     end
 
