@@ -7,7 +7,8 @@ module Loader
     def require_relative_directory *args
 
       folder= args.select{|e|(e.class <= ::String)}.join(File::Separator)
-      opts=   ::Hash[*args.select{|e|(e.class <= ::Hash)}]
+      opts= {}
+      args.select{|e|(e.class <= ::Hash)}.each{|hash| hash.each{|sk,sv| opts[sk]=sv } }
       args.select!{|e|(e.class <= ::Symbol)}
 
       opts[:recursive]  ||= opts.delete(:r) || opts.delete(:R) || !([:recursive,:r, :R,].select{|e| args.include?(e)}.empty?)
