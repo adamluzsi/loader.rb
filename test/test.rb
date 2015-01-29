@@ -1,3 +1,3 @@
+class TEST
 
-# require_relative "../lib/loader"
-require 'loader'
+end
