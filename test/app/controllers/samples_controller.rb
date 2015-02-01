@@ -1,0 +1,3 @@
+class SamplesController
+
+end

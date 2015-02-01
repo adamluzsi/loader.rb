@@ -88,7 +88,7 @@ simple as this:
 # lib/bootstrap
 ```ruby
 
-    require 'loader'
+    require 'loader/autoload'
 
     # from this point missing constants will be searched by file system path that is based on Object namespace
     Loader.autoload

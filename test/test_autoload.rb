@@ -47,6 +47,16 @@ describe Loader::AutoLoad do
 
     -> {
       begin
+
+        SamplesController
+
+      rescue Exception => e
+        e
+      end
+    }.call.is_a?(Exception).must_be :==, false
+
+    -> {
+      begin
         BOOOM
       rescue Exception => e
         e

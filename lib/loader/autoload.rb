@@ -7,6 +7,8 @@ module Loader
         def pwd
           if !!ENV['BUNDLE_GEMFILE']
             ENV['BUNDLE_GEMFILE'].split(File::Separator)[0..-2].join(File::Separator)
+          elsif defined?(Rails) && Rails.respond_to?(:root) && Rails.root
+            Rails.root.to_s
           else
             Dir.pwd
           end
@@ -14,12 +16,30 @@ module Loader
 
         def try_load_by(caller_class,name)
           levels = generate_levels(caller_class, name)
-          ['lib',nil].each do |folder|
-            levels.map{|str| File.join(*[pwd,folder,"#{underscore(str)}.rb"].compact)
-            }.sort{|a,b| b.length <=> a.length }.each do |path|
-              return if File.exist?(path) && require(path)
+          [
+              nil,
+              'lib',
+              File.join('{application,app,api}','*'),
+              File.join('**','*')
+          ].each do |folder|
+            return if load_by_folder(levels,folder)
+          end
+        end
+
+        def load_by_folder(levels,folder=nil)
+
+          desc_ary(levels.map{|str| File.join(*[pwd,folder,"#{underscore(str)}.rb"].compact)}).each do |path_constructor|
+            desc_ary(Dir.glob(path_constructor)).each do |path|
+              return true if File.exist?(path) && require(path)
             end
           end
+
+          return false
+
+        end
+
+        def desc_ary(array)
+          array.sort{|a,b| b.length <=> a.length }
         end
 
         def generate_levels(klass, name)
