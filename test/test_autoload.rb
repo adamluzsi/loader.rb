@@ -2,7 +2,7 @@ require_relative 'helper'
 describe Loader::AutoLoad do
 
   before do
-    Loader::AutoLoad::Support.__send__(:define_singleton_method,:pwd){ __dir__ }
+    Loader::Helpers.__send__(:define_singleton_method,:pwd){ __dir__ }
   end
 
   it 'should raise an constant missing error than' do
