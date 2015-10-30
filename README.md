@@ -21,6 +21,8 @@ The end goal is to make an easy ruby file loader for apps and gems.
 load relative directory (not based on Dir.pwd but the caller files position)
 if you pass multiple string as argument it will be joined by file separator that the OS use
 
+#### Manual loading folders 
+
 ```ruby
 
     require 'loader'
@@ -35,73 +37,26 @@ if you pass multiple string as argument it will be joined by file separator that
 
 ```
 
+#### Autoload folders
+
+```ruby
+
+  require 'loader'
+  Loader.autoload
+
+```
+
+optionally you can tell the project root folder if you work with in a gem.
+ 
+```ruby
+
+  require 'loader'
+  Loader.autoload(File.dirname(__FILE__))
+
+```
+
+
 If you like the basic idea that the app should not do any kind of Eager Load and become slow,
 you can use the constant based autoload function
 
-simple as this:
-
-# lib/dog
-```ruby
-
-  class Dog
-    def self.say
-      "Wuff"
-    end
-  end
-
-```
-
-# lib/cat
-```ruby
-
-  class Cat
-    #some meow here
-  end
-
-```
-
-# lib/cat/tail
-```ruby
-
-  class Cat
-    class Tail
-
-      def self.grab
-        "MEOW!!!"
-      end
-
-    end
-  end
-
-```
-
-# lib/cat/pawn.rb
-```ruby
-
-  class Cat
-    class Pawn
-    end
-  end
-
-```
-
-# lib/bootstrap
-```ruby
-
-    require 'loader/autoload'
-
-    # from this point missing constants will be searched by file system path that is based on Object namespace
-    Loader.autoload
-
-    # no need to load the files , only when they required
-    Cat::Tail.grab #> "MEOW!!!"
-
-    class Cat
-      Pawn #> Pawn Constant loaded and returned
-    end
-
-    class Cat
-      Dog #> return Top lvl Dog Constant after file is loaded by this Constant request
-    end
-
-```
+##### [Sketch about how it works](https://github.com/adamluzsi/loader.rb/blob/master/doc/sketch)
