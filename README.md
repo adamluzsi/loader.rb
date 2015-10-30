@@ -59,4 +59,4 @@ optionally you can tell the project root folder if you work with in a gem.
 If you like the basic idea that the app should not do any kind of Eager Load and become slow,
 you can use the constant based autoload function
 
-##### [Sketch about how it works](https://github.com/adamluzsi/loader.rb/blob/master/doc/sketch)
+##### [Sketch about how it works](https://github.com/adamluzsi/loader.rb/blob/master/doc/sketch.md)
