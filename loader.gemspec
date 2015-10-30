@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description   = %q{ easy to use File loader that allow directories/project both Lazy Load and Eager load for files and constants. The Eager load for relative directory made for gems by default }
   spec.summary       = %q{ easy to use File loader that allow directories/project both Lazy Load and Eager load for files and constants. The Eager load for relative directory made for gems by default }
 
-  spec.homepage      = 'https://github.com/adamluzsi/loader'
+  spec.homepage      = 'https://github.com/adamluzsi/loader.rb'
 
   spec.files         = `git ls-files`.split($/)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
