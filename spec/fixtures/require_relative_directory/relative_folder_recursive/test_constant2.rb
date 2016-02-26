@@ -1,0 +1,2 @@
+module TestConstant2
+end

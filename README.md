@@ -1,7 +1,7 @@
 loader
 ======
 
-Ruby module for Easy File lifting :)
+Ruby module for automatic file require based on convention :)
 
 ### Introduction
 

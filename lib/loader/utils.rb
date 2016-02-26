@@ -1,7 +1,13 @@
 require 'loader'
-module Loader::Helpers
+module Loader::Utils
 
   extend self
+
+  def require(file_path)
+    Kernel.require(file_path)
+  rescue LoadError
+    Kernel.load(file_path)
+  end
 
   def pwd
     if !!ENV['BUNDLE_GEMFILE']

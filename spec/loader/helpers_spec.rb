@@ -1,8 +1,8 @@
 require_relative '../spec_helper'
-describe Loader::Helpers do
+describe Loader::Utils do
 
   let(:project_folder) { 'Path/To/Project/Folder' }
-  subject { Loader::Helpers }
+  subject { Loader::Utils }
 
   describe '#pwd' do
 
@@ -45,7 +45,5 @@ describe Loader::Helpers do
     end
 
   end
-
-
 
 end
