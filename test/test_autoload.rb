@@ -15,7 +15,7 @@ describe Loader::AutoLoad do
       end
     }.call.is_a?(Exception).must_be :==, true
 
-    Loader.autoload
+    Loader.autoload!
 
     -> {
       begin
