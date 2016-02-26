@@ -2,7 +2,7 @@ require 'spec_helper'
 describe Loader do
 
   describe '.autoload!' do
-    let(:root_folder) { File.absolute_path(File.join(File.dirname(__FILE__), 'fixtures', 'autoload')) }
+    let(:root_folder) { File.expand_path(File.join(File.dirname(__FILE__), 'fixtures', 'autoload')) }
     before { Loader.autoload!(root_folder) }
 
     it 'should lazy load all the constants upon being used' do
@@ -13,7 +13,7 @@ describe Loader do
     end
 
     it 'should require unrequired gems' do
-      expect { JSON }.to_not raise_error
+      expect { YAML }.to_not raise_error
     end
 
   end

@@ -1,4 +1,5 @@
-require_relative '../spec_helper'
+require 'spec_helper'
+
 describe Loader::Utils do
 
   let(:project_folder) { 'Path/To/Project/Folder' }
@@ -24,7 +25,7 @@ describe Loader::Utils do
 
     context 'Rails is present and the root methot return not nil object' do
 
-      let(:rails) { double('rails', root: project_folder) }
+      let(:rails) { double('rails', :root => project_folder) }
       before { stub_const('Rails', rails) }
 
       it 'should fetch rails root path' do
