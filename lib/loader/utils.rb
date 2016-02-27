@@ -4,6 +4,7 @@ module Loader::Utils
   extend self
 
   def require(file_path)
+    return false unless File.exist?(file_path)
     Kernel.require(file_path)
   rescue LoadError
     Kernel.load(file_path)

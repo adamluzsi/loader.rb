@@ -19,39 +19,72 @@ module Loader::Fetcher
   end
 
   def load(caller_class, name)
-    folder_path = get_folder_path(caller_class)
-    file_name = Loader::Utils.underscore(name)
-
     Loader.project_root_folders.each do |project_root|
-      Dir.glob(File.join(project_root, '**', [folder_path, "#{file_name}.{rb,ru}"].compact)).each do |ruby_file_path|
-        if Loader::Utils.require(ruby_file_path)
-          c = fetch_constant(caller_class, name)
+      lookup_and_load_file_in(project_root, caller_class, name)
 
-          return c unless c.nil?
-        end
-      end
+      constant = fetch_constant(caller_class, name)
+
+      return constant unless constant.nil?
     end
 
     return load_gem(caller_class, name)
   end
 
+  def lookup_and_load_file_in(project_root, caller_class, name)
+    file_name = Loader::Utils.underscore(name)
+
+    get_folder_paths(caller_class).each do |folder_path|
+      Dir.glob(File.join(project_root, '**', folder_path, "#{file_name}.{rb,ru}")).each do |ruby_file_path|
+        return if Loader::Utils.require(ruby_file_path)
+      end
+    end
+  end
+
 
   protected
 
-  def get_folder_path(caller_class)
-    return if caller_class == ::Object
-    caller_class.to_s.split('::').map { |camel_case| Loader::Utils.underscore(camel_case) }.join(File::Separator)
+  def get_folder_paths(caller_class)
+
+    elements = caller_class.to_s.split('::').map do |camel_case|
+      Loader::Utils.underscore(camel_case)
+    end
+
+    elements.shift if elements[0] == 'object'
+
+    return elements.reverse.reduce(['**']) { |constant_paths, name_part|
+      last_element = constant_paths.last
+      constant_paths.push(File.join([last_element, name_part].compact.reverse))
+      constant_paths
+    }.reverse
+
   end
 
   def fetch_constant(caller_class, name)
-    class_name = ([caller_class, name] - [Object]).join('::')
-    rgx = /^#{Regexp.escape(class_name)}$/
+    constant_paths = get_constant_paths(caller_class, name)
 
-    ObjectSpace.each_object(Module) do |obj|
-      return obj if !!(obj.to_s =~ rgx)
+    constant_paths.each do |constant_path|
+
+      rgx = /^#{Regexp.escape(constant_path)}$/
+
+      ObjectSpace.each_object(Module) do |obj|
+        return obj if !!(obj.to_s =~ rgx)
+      end
+
     end
 
+
     return nil
+  end
+
+  def get_constant_paths(caller_class, name)
+    elements = [caller_class.to_s.split('::'), name.to_s].flatten
+    elements.shift if elements[0] == 'Object'
+    return elements.reverse.reduce([]) { |constant_paths, name_part|
+      last_element = constant_paths.last
+
+      constant_paths.push(File.join([last_element, name_part].compact.reverse.join('::')))
+      constant_paths
+    }.reverse
   end
 
 end
